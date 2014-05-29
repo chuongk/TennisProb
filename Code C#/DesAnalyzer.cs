@@ -50,6 +50,9 @@ namespace TestGettingDataFromWebsite
         const string UFE = "unforced error"; // unforced error
         const string Winner = "winner";
         const string FE = "forced error"; // force error
+        const string serveT = "down the T";
+        const string serveBody = "body";
+        const string serveWide = "wide";
 
         // array to store Nadal backhand return count
         private int[][] Nad_BH_R;
@@ -179,9 +182,13 @@ namespace TestGettingDataFromWebsite
 
         private void analyzeMatch(string subMatch, Turn curTurn, courtType courtServe)
         {
-            // If the serve is ace, don't care
+            // If the serve is ace, count to opp return error and return
             // We already find the serve statistic in other classes
-            if (subMatch.IndexOf(ace) >= 0) return;
+            if (subMatch.IndexOf(ace) >= 0)
+            {
+                CountAce(subMatch, curTurn, courtServe);
+                return;
+            }
             // If there is a 2nd serve then we start from there
             if (subMatch.IndexOf(startset2nd) >= 0)
                 subMatch = subMatch.Substring(subMatch.IndexOf(startset2nd));
@@ -223,6 +230,79 @@ namespace TestGettingDataFromWebsite
             }
         }
 
+        // Count to opponent return error in case of ace
+        private void CountAce(string subMatch, Turn curTurn, courtType courtServe)
+        {
+            Random random = new Random();
+            Analyzer.serveType curServe = Analyzer.serveType.T;
+            if (subMatch.IndexOf(serveBody) >= 0)
+                curServe = Analyzer.serveType.Body;
+            else if (subMatch.IndexOf(serveWide) >= 0)
+                curServe = Analyzer.serveType.Wide;
+
+            if (curTurn == Turn.Federer)
+            {
+                switch (curServe)
+                {
+                    case Analyzer.serveType.T:
+                        if (courtServe == courtType.deuce)
+                            Nad_FH_R[(int)courtServe][(int)ReturnType_Nad_FH_De.RE]++;
+                        else
+                            Nad_BH_R[(int)courtServe][(int)ReturnType_Nad_BH_De.RE]++;
+                        break;
+                    case Analyzer.serveType.Wide:
+                        if (courtServe == courtType.deuce)
+                            Nad_BH_R[(int)courtServe][(int)ReturnType_Nad_BH_De.RE]++;
+                        else
+                            Nad_FH_R[(int)courtServe][(int)ReturnType_Nad_FH_De.RE]++;
+                        break;
+                    case Analyzer.serveType.Body:
+                        // for body we random 50/50
+                        if (random.Next(0, 100) < 50)
+                        {
+                            Nad_BH_R[(int)courtServe][(int)ReturnType_Nad_BH_De.RE]++;
+                        }
+                        else
+                        {
+                            Nad_FH_R[(int)courtServe][(int)ReturnType_Nad_FH_De.RE]++;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                switch (curServe)
+                {
+                    case Analyzer.serveType.T:
+                        if (courtServe == courtType.ad)
+                            Fed_FH_R[(int)courtServe][(int)ReturnType_Fed_FH_De.RE]++;
+                        else
+                            Fed_BH_R[(int)courtServe][(int)ReturnType_Fed_BH_De.RE]++;
+                        break;
+                    case Analyzer.serveType.Wide:
+                        if (courtServe == courtType.ad)
+                            Fed_BH_R[(int)courtServe][(int)ReturnType_Fed_BH_De.RE]++;
+                        else
+                            Fed_FH_R[(int)courtServe][(int)ReturnType_Fed_FH_De.RE]++;
+                        break;
+                    case Analyzer.serveType.Body:
+                        // for body we random 50/50
+                        if (random.Next(0, 100) < 50)
+                        {
+                            Fed_BH_R[(int)courtServe][(int)ReturnType_Fed_BH_De.RE]++;
+                        }
+                        else
+                        {
+                            Fed_FH_R[(int)courtServe][(int)ReturnType_Fed_FH_De.RE]++;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
         // count return for deuce serve
         private void countReturn_De(string RetDes, Turn iTurn, string opResponse = null)
         {
