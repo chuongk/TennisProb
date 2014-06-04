@@ -1003,12 +1003,6 @@ namespace PAT.Lib
             Compute_Nad_Return_Percentage();
             Compute_Fed_Shot_Percentage();
             Compute_Nad_Shot_Percentage();
-
-            Fed_BH_Serve_toString();
-            Nad_BH_Serve_toString();
-
-            Fed_Shot_toString();
-            Nad_Shot_toString();
         }
 
         // Find who serve next
@@ -1888,7 +1882,7 @@ namespace PAT.Lib
             // depth = 0 is short
             if (depth == 0)
             {
-                return (int)(1 - Nad_Shot_Percent[hand][shotType] * 0.8);
+                return (int)(Fed_Shot_Percent[hand][shotType] - Nad_Shot_Percent[hand][shotType] * 0.8);
             }
             else
             {
@@ -1903,7 +1897,7 @@ namespace PAT.Lib
                 return Fed_Shot_Percent[hand][shotType];
             if (depth == 0)
             {
-                return (int)(1 - Fed_Shot_Percent[hand][shotType] * 0.8);
+                return (int)(Fed_Shot_Percent[hand][shotType] - Fed_Shot_Percent[hand][shotType] * 0.8);
             }
             else
             {
